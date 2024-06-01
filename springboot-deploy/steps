@@ -1,0 +1,156 @@
+
+thisisunsafe
+##############
+# MAVEN INSTALL
+wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+wget https://archive.apache.org/dist/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz 
+tar -xvf apache-maven-3.8.7-bin.tar.gz
+sudo mv apache-maven-3.8.7 /opt/
+
+# Add the following to path
+export M2_HOME='/opt/apache-maven-3.8.7'
+export PATH="$M2_HOME/bin:$PATH"
+
+
+mvn -version
+
+mvn --help    
+
+'''
+usage: mvn [options] [<goal(s)>] [<phase(s)>]
+
+Options:
+ -am,--also-make                        If project list is specified, also
+                                        build projects required by the
+                                        list
+ -amd,--also-make-dependents            If project list is specified, also
+                                        build projects that depend on
+                                        projects on the list
+ -B,--batch-mode                        Run in non-interactive (batch)
+                                        mode (disables output color)
+ -b,--builder <arg>                     The id of the build strategy to
+                                        use
+ -C,--strict-checksums                  Fail the build if checksums don't
+                                        match
+ -c,--lax-checksums                     Warn if checksums don't match
+    --color <arg>                       Defines the color mode of the
+                                        output. Supported are 'auto',
+                                        'always', 'never'.
+ -cpu,--check-plugin-updates            Ineffective, only kept for
+                                        backward compatibility
+ -D,--define <arg>                      Define a system property
+ -e,--errors                            Produce execution error messages
+ -emp,--encrypt-master-password <arg>   Encrypt master security password
+ -ep,--encrypt-password <arg>           Encrypt server password
+ -f,--file <arg>                        Force the use of an alternate POM
+                                        file (or directory with pom.xml)
+ -fae,--fail-at-end                     Only fail the build afterwards;
+                                        allow all non-impacted builds to
+                                        continue
+ -ff,--fail-fast                        Stop at first failure in
+                                        reactorized builds
+ -fn,--fail-never                       NEVER fail the build, regardless
+                                        of project result
+ -gs,--global-settings <arg>            Alternate path for the global
+                                        settings file
+ -gt,--global-toolchains <arg>          Alternate path for the global
+                                        toolchains file
+ -h,--help                              Display help information
+ -l,--log-file <arg>                    Log file where all build output
+                                        will go (disables output color)
+ -llr,--legacy-local-repository         Use Maven 2 Legacy Local
+                                        Repository behaviour, ie no use of
+                                        _remote.repositories. Can also be
+                                        activated by using
+                                        -Dmaven.legacyLocalRepo=true
+ -N,--non-recursive                     Do not recurse into sub-projects
+ -npr,--no-plugin-registry              Ineffective, only kept for
+                                        backward compatibility
+ -npu,--no-plugin-updates               Ineffective, only kept for
+                                        backward compatibility
+ -nsu,--no-snapshot-updates             Suppress SNAPSHOT updates
+ -ntp,--no-transfer-progress            Do not display transfer progress
+                                        when downloading or uploading
+ -o,--offline                           Work offline
+ -P,--activate-profiles <arg>           Comma-delimited list of profiles
+                                        to activate
+ -pl,--projects <arg>                   Comma-delimited list of specified
+                                        reactor projects to build instead
+                                        of all projects. A project can be
+                                        specified by [groupId]:artifactId
+                                        or by its relative path
+ -q,--quiet                             Quiet output - only show errors
+ -rf,--resume-from <arg>                Resume reactor from specified
+                                        project
+ -s,--settings <arg>                    Alternate path for the user
+                                        settings file
+ -t,--toolchains <arg>                  Alternate path for the user
+                                        toolchains file
+ -T,--threads <arg>                     Thread count, for instance 2.0C
+                                        where C is core multiplied
+ -U,--update-snapshots                  Forces a check for missing
+                                        releases and updated snapshots on
+                                        remote repositories
+ -up,--update-plugins                   Ineffective, only kept for
+                                        backward compatibility
+ -v,--version                           Display version information
+ -V,--show-version                      Display version information
+                                        WITHOUT stopping build
+ -X,--debug                             Produce execution debug output
+ 
+'''
+
+##############
+mvn clean #cleans the project by deleting the target directory
+mvn verify #verify project, quality and integration tests
+mvn package #compiles the code, runs tests, packages the compiled code into a distributable format (jar or war)
+mvn install #same with package except that this installs to local repo 
+mvn release:prepare 
+'''
+This command prepares the project for a release by performing the following steps:
+-Checks that there are no uncommitted changes.
+-Updates the version in pom.xml from x.y.z-SNAPSHOT to x.y.z.
+-Commits the changes.
+-Tags the project with the release version in the SCM (e.g., Git).
+-Updates the version in pom.xml to the next development version (x.y.z+1-SNAPSHOT).
+-Commits these changes.
+'''
+
+mvn release:perform 
+'''
+performs the actual release by checking out the tagged release, building the project, and deploying the artifacts to a remote repository
+'''
+
+mvn install
+...look for jar file in target folder
+java -jar xxxxx.jar
+
+
+
+
+# STEPS
+#Build
+mvn clean #removes target folder
+mvn verify
+mvn -B -U clean verify
+mvn install #this creates a jar
+mvn package #this also creates a jar.
+
+#Release
+MAVEN_CLI_OPTS="clean --quiet --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true --settings .ci/.m2-settings.xml"
+
+
+mvn release:prepare
+mvn $MAVEN_CLI_OPTS release:prepare -Darguments=-DskipTests -Dproject.scm.credentials="${GIT_USER}:${GIT_TOKEN}"
+mvn release:perform
+
+
+These are the dependences causing the issue:
+org.springframework.boot:spring-boot-starter-parent:pom:3.3.0-SNAPSHOT
+org.springframework.boot:spring-boot-starter-test:jar:3.3.0-SNAPSHOT:test
+org.springframework.boot:spring-boot-starter-web:jar:3.3.0-SNAPSHOT:compile
+org.springframework.boot:spring-boot-maven-plugin:maven-plugin:3.3.0-SNAPSHOT:runtime
+
+<version>3.3.0</version> 
+

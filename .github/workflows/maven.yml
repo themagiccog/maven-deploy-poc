@@ -14,22 +14,64 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
-  build:
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'
+#   workflow_dispatch:
 
+jobs:
+  build_and_release:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21 (Zulu)
       uses: actions/setup-java@v3
       with:
         java-version: '21'
         distribution: 'zulu'
         cache: maven
-    - name: Build with Maven
+
+    # - name: Configure Git
+    #   run: |
+    #     git config --global user.name 'Your Name'
+    #     git config --global user.email 'your-email@example.com'
+
+    - name: Set up Maven settings
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
+    - name: Build with Maven (Clean)
+      run: mvn clean
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build with Maven (Verify)
+      run: mvn verify
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build with Maven (Package) #Optional
       run: mvn -B package --file springboot-deploy/pom.xml
 
-    # # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    # - name: Update dependency graph
-    #   uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+    - name: Prepare release
+      run: mvn release:prepare -B
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Perform release
+      run: mvn release:perform -B
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # - name: Deploy to Maven Central
+    #   run: mvn deploy -P release
+    #   env:
+    #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+    #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    #     OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+    #     OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
