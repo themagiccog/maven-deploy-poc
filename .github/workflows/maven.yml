@@ -20,6 +20,9 @@ on:
 #       - 'v*.*.*'
 #   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_release_deploy:
     name: Build, Release and Deploy - Maven
@@ -42,7 +45,12 @@ jobs:
       run: |
         git config  user.name 'Chiagozie' #--global
         git config user.email 'Chiagozie@example.com' #--global
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+    - name: Authenticate with GitHub
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
 
     - name: Set up Maven settings
       run: |
