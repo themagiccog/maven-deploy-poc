@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.justademo</groupId>
 	<artifactId>springboot-deploy</artifactId>
-	<version>0.0.16</version>
+	<version>0.0.17-SNAPSHOT</version>
 	<name>springboot-deploy</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -42,7 +42,7 @@
     <!-- <developerConnection>scm:git:ssh://git@github.com:themagiccog/maven-deploy-poc.git</developerConnection> -->
     <developerConnection>scm:git:https://github.com/themagiccog/maven-deploy-poc.git</developerConnection>
     <url>https://github.com/themagiccog/maven-deploy-poc</url>
-    <tag>springboot-deploy-0.0.16</tag>
+    <tag>HEAD</tag>
   </scm>
 	<build>
 		<plugins>
