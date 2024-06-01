@@ -72,7 +72,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform release
-      run: mvn release:perform -B  -q -e -Darguments=-DskipTests
+      run: mvn release:perform -B  -q -e -Darguments=-DskipTests -Dproject.scm.credentials="${{ secrets.GITHUB_ACTOR }}:${{ secrets.GITHUB_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
