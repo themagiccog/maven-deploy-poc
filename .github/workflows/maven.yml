@@ -71,14 +71,17 @@ jobs:
       run: mvn -B package  -q -e #--file springboot-deploy/pom.xml
 
     - name: Prepare release
-      run: mvn release:prepare -B  -q -e
+      run: |
+        mvn clean
+        mvn release:prepare -B  -q -e -Darguments=-DskipTests
+        mvn release:perform -B  -q -e -Darguments=-DskipTests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Perform release
-      run: mvn release:perform -B  -q -e
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Perform release
+    #   run: mvn release:perform -B  -q -e
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   #   - name: Deploy to Maven Central
   #     run: mvn deploy -P release
