@@ -53,19 +53,17 @@ jobs:
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
 
     - name: Set up Maven settings
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         mkdir -p ~/.m2
-        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GH_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
     - name: Build with Maven (Clean)
       run: mvn clean -q -e
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build with Maven (Verify)
       run: mvn verify -q -e
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build with Maven (Package) #Optional
       run: mvn -B package  -q -e #--file springboot-deploy/pom.xml
@@ -74,9 +72,8 @@ jobs:
       run: |
         mvn clean
         mvn release:prepare -B  -q -e -Darguments=-DskipTests
-        mvn release:perform -B  -q -e -Darguments=-DskipTests
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Perform release
       run: mvn release:perform -B  -q -e -Darguments=-DskipTests
