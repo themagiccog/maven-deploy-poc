@@ -21,7 +21,8 @@ on:
 #   workflow_dispatch:
 
 jobs:
-  build_and_release:
+  build:
+    name: Build Maven
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -60,6 +61,13 @@ jobs:
     - name: Build with Maven (Package) #Optional
       run: mvn -B package #--file springboot-deploy/pom.xml
 
+  release:
+    name: Release Maven
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./springboot-deploy
+    steps:
     - name: Prepare release
       run: mvn release:prepare -B
       env:
@@ -70,10 +78,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Deploy to Maven Central
-    #   run: mvn deploy -P release
-    #   env:
-    #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-    #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-    #     OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-    #     OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+  # deploy:
+  #   name: Deploy Maven
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./springboot-deploy
+  #   steps:
+  #   - name: Deploy to Maven Central
+  #     run: mvn deploy -P release
+  #     env:
+  #       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+  #       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+  #       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+  #       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
