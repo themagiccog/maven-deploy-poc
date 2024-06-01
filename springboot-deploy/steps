@@ -121,7 +121,11 @@ mvn release:perform
 '''
 performs the actual release by checking out the tagged release, building the project, and deploying the artifacts to a remote repository
 '''
+mvn dependency:tree 
+mvn dependency:tree -Dincludes=groupId:artifactId
+mvn dependency:analyze
 
+######
 mvn install
 ...look for jar file in target folder
 java -jar xxxxx.jar
