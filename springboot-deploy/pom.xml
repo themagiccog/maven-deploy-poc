@@ -38,12 +38,12 @@
 	    <artifactId>spring-boot-starter-web</artifactId>
 	  </dependency>
 	</dependencies>
-  <!-- <scm>
+  <scm>
     <connection>scm:git:https://github.com/themagiccog/maven-deploy-poc.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:themagiccog/maven-deploy-poc.git</developerConnection>
     <url>https://github.com/themagiccog/maven-deploy-poc</url>
     <tag>HEAD</tag>
-  </scm> -->
+  </scm>
 	<build>
 		<plugins>
 			<plugin>
