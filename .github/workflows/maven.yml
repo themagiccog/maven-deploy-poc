@@ -1,10 +1,89 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+# # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# # This workflow uses actions that are not certified by GitHub.
+# # They are provided by a third-party and are governed by
+# # separate terms of service, privacy policy, and support
+# # documentation.
+
+# name: Java CI with Maven
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# # on:
+# #   push:
+# #     tags:
+# #       - 'v*.*.*'
+# #   workflow_dispatch:
+
+# permissions:
+#   contents: write
+
+# jobs:
+#   build_release_deploy:
+#     name: Build, Release and Deploy - Maven
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: ./springboot-deploy
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
+
+#     - name: Set up JDK 21 (Zulu)
+#       uses: actions/setup-java@v3
+#       with:
+#         java-version: '21'
+#         distribution: 'zulu'
+#         cache: maven
+
+#     - name: Configure Git
+#       run: |
+#         git config  user.name 'Chiagozie' #--global
+#         git config user.email 'Chiagozie@example.com' #--global
+
+#     - name: Authenticate with GitHub
+#       run: |
+#         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+#     - name: Set up Maven settings
+#       run: |
+#         mkdir -p ~/.m2
+#         echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
+#     - name: Build with Maven (Clean)
+#       run: mvn clean -q -e
+
+#     - name: Build with Maven (Verify)
+#       run: mvn verify -q -e
+
+#     - name: Build with Maven (Package) #Optional
+#       run: mvn -B package  -q -e #--file springboot-deploy/pom.xml
+
+#     - name: Prepare release
+#       run: |
+#         mvn clean
+#         mvn release:prepare -B -X -q -e -Darguments=-DskipTests
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#     - name: Perform release
+#       run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -Dproject.scm.credentials="themagiccog:${{ secrets.GH_TOKEN }}"
+#       env:
+#         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+#   #   - name: Deploy to Maven Central
+#   #     run: mvn deploy -P release
+#   #     env:
+#   #       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+#   #       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+#   #       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+#   #       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+
 
 name: Java CI with Maven
 
@@ -13,12 +92,6 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-# on:
-#   push:
-#     tags:
-#       - 'v*.*.*'
-#   workflow_dispatch:
 
 permissions:
   contents: write
@@ -30,9 +103,12 @@ jobs:
     defaults:
       run:
         working-directory: ./springboot-deploy
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up JDK 21 (Zulu)
       uses: actions/setup-java@v3
@@ -43,8 +119,8 @@ jobs:
 
     - name: Configure Git
       run: |
-        git config  user.name 'Chiagozie' #--global
-        git config user.email 'Chiagozie@example.com' #--global
+        git config --global user.name 'Chiagozie'
+        git config --global user.email 'Chiagozie@example.com'
 
     - name: Authenticate with GitHub
       run: |
@@ -61,8 +137,8 @@ jobs:
     - name: Build with Maven (Verify)
       run: mvn verify -q -e
 
-    - name: Build with Maven (Package) #Optional
-      run: mvn -B package  -q -e #--file springboot-deploy/pom.xml
+    - name: Build with Maven (Package) # Optional
+      run: mvn -B package -q -e
 
     - name: Prepare release
       run: |
@@ -72,14 +148,14 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform release
-      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -Dproject.scm.credentials="themagiccog:${{ secrets.GH_TOKEN }}"
+      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #   - name: Deploy to Maven Central
-  #     run: mvn deploy -P release
-  #     env:
-  #       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-  #       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-  #       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-  #       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+  # - name: Deploy to Maven Central
+  #   run: mvn deploy -P release
+  #   env:
+  #     GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+  #     GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+  #     OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+  #     OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
