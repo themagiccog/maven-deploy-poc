@@ -21,8 +21,8 @@ on:
 #   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build Maven
+  build_release_deploy:
+    name: Build, Release and Deploy - Maven
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -61,13 +61,6 @@ jobs:
     - name: Build with Maven (Package) #Optional
       run: mvn -B package #--file springboot-deploy/pom.xml
 
-  release:
-    name: Release Maven
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./springboot-deploy
-    steps:
     - name: Prepare release
       run: mvn release:prepare -B
       env:
@@ -78,13 +71,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # deploy:
-  #   name: Deploy Maven
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./springboot-deploy
-  #   steps:
   #   - name: Deploy to Maven Central
   #     run: mvn deploy -P release
   #     env:
