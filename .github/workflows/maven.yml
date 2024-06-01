@@ -8,18 +8,18 @@
 
 name: Java CI with Maven
 
-# on:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
-
-
 on:
   push:
-    tags:
-      - 'v*.*.*'
-  workflow_dispatch:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+# on:
+#   push:
+#     tags:
+#       - 'v*.*.*'
+#   workflow_dispatch:
 
 permissions:
   contents: write
@@ -69,17 +69,34 @@ jobs:
     - name: Build with Maven (Package) # Optional
       run: mvn -B package -q -e
 
+    - name: Extract Git tag
+      id: get_tag
+      run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+    - name: Update Maven project version
+      run: mvn versions:set -DnewVersion=${{ env.RELEASE_TAG }} -q -e
+
     - name: Prepare release
+      if: startsWith(github.ref, 'refs/tags/')
       run: |
-        mvn clean
-        mvn release:prepare -B -q -e -Darguments=-DskipTests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        mvn release:prepare -B -X -q -e -DreleaseVersion=${{ env.RELEASE_TAG }} -Darguments=-DskipTests
 
     - name: Perform release
-      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        mvn release:perform -B -X -q -e -Darguments=-DskipTests
+
+    # - name: Prepare release
+    #   run: |
+    #     mvn clean
+    #     mvn release:prepare -B -q -e -Darguments=-DskipTests
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # - name: Perform release
+    #   run: mvn release:perform -B -X -q -e -Darguments=-DskipTests
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # - name: Deploy to Maven Central
   #   run: mvn deploy -P release
