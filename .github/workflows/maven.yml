@@ -23,7 +23,9 @@ on:
 jobs:
   build_and_release:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./springboot-deploy
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -56,7 +58,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build with Maven (Package) #Optional
-      run: mvn -B package --file springboot-deploy/pom.xml
+      run: mvn -B package #--file springboot-deploy/pom.xml
 
     - name: Prepare release
       run: mvn release:prepare -B
