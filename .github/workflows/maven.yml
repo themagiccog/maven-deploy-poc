@@ -72,9 +72,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform release
-      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -Dproject.scm.credentials="themagiccog:${{ secrets.GITHUB_TOKEN }}"
+      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -Dproject.scm.credentials="themagiccog:${{ secrets.GH_TOKEN }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   #   - name: Deploy to Maven Central
   #     run: mvn deploy -P release
