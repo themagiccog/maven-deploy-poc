@@ -57,12 +57,8 @@ jobs:
 
     - name: Set up Maven settings
       run: |
-        echo "ls of cwd"  
-        ls -ltra   
-        echo "ls of home"  
-        ls -ltra  ~/
-        mkdir -p ~/springboot-deploy/.m2
-        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GH_TOKEN }}</password></server></servers></settings>" > ~/springboot-deploy/.m2/settings.xml
+        mkdir -p .m2
+        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GH_TOKEN }}</password></server></servers></settings>" > .m2/settings.xml
 
     - name: Build with Maven (Clean)
       run: mvn clean -q -e
