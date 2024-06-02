@@ -119,7 +119,8 @@ This command prepares the project for a release by performing the following step
 
 mvn release:perform 
 '''
-performs the actual release by checking out the tagged release, building the project, and deploying the artifacts to a remote repository
+performs the actual release by checking out the tagged release, building the project, and deploying the artifacts to a remote repository.
+you have to specify a maven repo where the artifact is stored.
 '''
 mvn dependency:tree 
 mvn dependency:tree -Dincludes=groupId:artifactId
