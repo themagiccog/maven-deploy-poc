@@ -63,15 +63,15 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>my-github-maven-repo</id>
+			<id>github</id>
 			<distributionManagement>
 				<repository>
-					<id>my-github-maven-repo</id>
+					<id>github</id>
 					<name>GitHub Springboot Deploy Maven Packages</name>
 					<url>https://maven.pkg.github.com/themagiccog/maven-deploy-poc</url>
 				</repository>
 				<snapshotRepository>
-					<id>my-github-maven-repo</id>
+					<id>github</id>
 					<name>GitHub Springboot Deploy Maven Snapshots</name>
 					<url>https://maven.pkg.github.com/themagiccog/maven-deploy-poc</url>
 				</snapshotRepository>
