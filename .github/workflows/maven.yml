@@ -94,7 +94,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform release
-      run: mvn release:perform -B -q -e -Darguments=-DskipTests -P my-github-maven-repo
+      run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -P my-github-maven-repo
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
