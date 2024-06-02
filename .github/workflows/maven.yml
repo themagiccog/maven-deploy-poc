@@ -53,12 +53,12 @@ jobs:
     - name: Authenticate with GitHub
       run: |
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        #git remote set-url origin https://${{ secrets.GITHUB_ACTOR }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        #git remote set-url origin https://${{ secrets.GITHUB_ACTOR }}:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
 
     - name: Set up Maven settings
       run: |
         mkdir -p ~/.m2
-        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+        echo "<settings><servers><server><id>github</id><username>${{ secrets.GITHUB_ACTOR }}</username><password>${{ secrets.GH_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
     - name: Build with Maven (Clean)
       run: mvn clean -q -e
@@ -91,12 +91,12 @@ jobs:
         mvn release:clean
         mvn release:prepare -B -q -e -Darguments=-DskipTests
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Perform release
       run: mvn release:perform -B -X -q -e -Darguments=-DskipTests -P github
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   # - name: Deploy to Maven Central
   #   run: mvn deploy -P release
